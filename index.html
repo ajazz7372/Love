@@ -4,79 +4,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Love ❤️</title>
 
+<!-- Elegant Script Font -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 body {
+  font-family: 'Great Vibes', cursive;
   background: black;
-  color: white;
   overflow-x: hidden;
+  height: 500vh; /* Long scroll */
 }
 
-section {
+/* Sticky Viewport */
+.sticky-container {
+  position: sticky;
+  top: 0;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 20px;
-  position: relative;
-  background: linear-gradient(180deg, #000000, #3b001f);
-  overflow: hidden;
+  transition: background 1s ease;
 }
 
 /* Golden Text */
 .gold-text {
-  font-size: 28px;
-  font-weight: bold;
-  background: linear-gradient(45deg, #ffd700, #ffcc33, #fff2a8);
+  font-size: 38px;
+  max-width: 90%;
+  line-height: 1.3;
+  background: linear-gradient(45deg, #d4af37, #ffd700, #fff6cc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(255,215,0,0.7),
-               0 0 20px rgba(255,215,0,0.5);
+  text-shadow:
+    0 0 10px rgba(255,215,0,0.7),
+    0 0 20px rgba(255,215,0,0.5),
+    0 0 40px rgba(255,215,0,0.3);
+  transition: opacity 0.8s ease, transform 0.8s ease;
   opacity: 0;
-  transform: translateY(40px);
-  transition: all 1.5s ease;
-}
-
-.active .gold-text {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Shimmer Effect */
-.gold-text::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(120deg,
-              transparent,
-              rgba(255,255,255,0.8),
-              transparent);
-  transform: skewX(-20deg);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 200%; }
+  transform: scale(0.9);
 }
 
 /* Floating Hearts */
 .heart {
-  position: absolute;
+  position: fixed;
   bottom: -20px;
-  font-size: 18px;
-  color: rgba(255,215,0,0.6);
+  font-size: 14px;
+  color: rgba(255,215,0,0.5);
   animation: floatUp linear infinite;
+  pointer-events: none;
 }
 
 @keyframes floatUp {
@@ -95,56 +76,58 @@ section {
   justify-content: center;
   align-items: center;
   z-index: 10;
-}
-
-#startScreen h1 {
-  font-size: 26px;
-  background: linear-gradient(45deg, gold, #ffcc33);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: gold;
+  font-size: 28px;
   text-shadow: 0 0 15px gold;
-}
-
-.final {
-  background: linear-gradient(180deg, #3b001f, #000000);
 }
 </style>
 </head>
 
 <body>
 
-<div id="startScreen">
-  <h1>Tap to Begin ❤️</h1>
-</div>
+<div id="startScreen">Tap to Begin ❤️</div>
 
 <audio id="bgMusic">
   <source src="love-clip.mp3" type="audio/mpeg">
 </audio>
 
-<section class="scene">
-  <div class="gold-text">In a world full of noise…</div>
-</section>
-
-<section class="scene">
-  <div class="gold-text">Somehow… I found you.</div>
-</section>
-
-<section class="scene">
-  <div class="gold-text">
-    You make ordinary days feel special.<br>
-    You make simple moments unforgettable.
-  </div>
-</section>
-
-<section class="scene">
-  <div class="gold-text">I choose you.</div>
-</section>
-
-<section class="scene final">
-  <div class="gold-text">Happy Valentine’s Day, My Love ❤️</div>
-</section>
+<div class="sticky-container" id="scene">
+  <div class="gold-text" id="text"></div>
+</div>
 
 <script>
+
+const text = document.getElementById("text");
+const scene = document.getElementById("scene");
+
+const messages = [
+  "In a world full of noise…",
+  "Somehow… I found you.",
+  "You make ordinary days feel special.",
+  "I choose you.",
+  "Happy Valentine’s Day, My Love ❤️"
+];
+
+/* Scroll Animation */
+window.addEventListener("scroll", () => {
+  let scroll = window.scrollY;
+  let maxScroll = document.body.scrollHeight - window.innerHeight;
+  let progress = scroll / maxScroll;
+
+  let index = Math.floor(progress * messages.length);
+  if (index >= messages.length) index = messages.length - 1;
+
+  text.style.opacity = 1;
+  text.style.transform = "scale(" + (1 + progress * 0.2) + ")";
+  text.innerHTML = messages[index];
+
+  /* Background Warm Transition */
+  if (progress < 0.7) {
+    scene.style.background = "linear-gradient(180deg, #000000, #2b0014)";
+  } else {
+    scene.style.background = "linear-gradient(180deg, #2b0014, #6b001f)";
+  }
+});
 
 /* Start Music */
 document.getElementById("startScreen").addEventListener("click", function() {
@@ -152,36 +135,21 @@ document.getElementById("startScreen").addEventListener("click", function() {
   this.style.display = "none";
 });
 
-/* Scroll Animation */
-const scenes = document.querySelectorAll(".scene");
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("active");
-    }
-  });
-}, { threshold: 0.6 });
-
-scenes.forEach(scene => {
-  observer.observe(scene);
-});
-
-/* Generate Floating Hearts */
+/* Create Floating Hearts */
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
   heart.innerHTML = "❤";
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.animationDuration = (5 + Math.random() * 5) + "s";
+  heart.style.animationDuration = (6 + Math.random() * 6) + "s";
   document.body.appendChild(heart);
 
   setTimeout(() => {
     heart.remove();
-  }, 10000);
+  }, 12000);
 }
 
-setInterval(createHeart, 500);
+setInterval(createHeart, 800);
 
 </script>
 
