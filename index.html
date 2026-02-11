@@ -4,20 +4,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Love ❤️</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Great+Vibes&family=Montserrat:wght@500&family=Cinzel:wght@600&display=swap" rel="stylesheet">
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box;}
 
-body {
-  font-family: 'Great Vibes', cursive;
+body{
   overflow-x:hidden;
   background:black;
   height:500vh;
 }
 
-/* Sticky Scene Container */
-.scene {
+/* Sticky Scene */
+.scene{
   position:sticky;
   top:0;
   height:100vh;
@@ -25,8 +24,8 @@ body {
   overflow:hidden;
 }
 
-/* Background Layer */
-.bg {
+/* Background */
+.bg{
   position:absolute;
   width:100%;
   height:100%;
@@ -35,45 +34,67 @@ body {
   transition:transform 0.2s ease-out, filter 0.3s ease;
 }
 
-/* Light Overlay */
-.light {
+/* Dark Overlay */
+.overlay{
   position:absolute;
   width:100%;
   height:100%;
-  background:radial-gradient(circle at center, rgba(255,200,100,0.3), transparent 60%);
-  opacity:0;
-  transition:opacity 0.5s ease;
+  background:linear-gradient(to bottom,rgba(0,0,0,0.6),rgba(0,0,0,0.4),rgba(0,0,0,0.7));
+  z-index:1;
 }
 
-/* Hearts Layer */
-.hearts {
+/* Warm Light Overlay */
+.light{
   position:absolute;
   width:100%;
   height:100%;
-  pointer-events:none;
+  background:radial-gradient(circle at center, rgba(255,180,100,0.4), transparent 60%);
+  opacity:0;
+  transition:opacity 0.5s ease;
+  z-index:2;
 }
 
 /* Text */
-.text {
+.text{
   position:absolute;
   width:100%;
   top:50%;
   transform:translateY(-50%);
   text-align:center;
-  font-size:38px;
   padding:20px;
-  background: linear-gradient(45deg,#d4af37,#ffd700,#fff6cc);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  z-index:3;
+  color:#ffe6c7;
   text-shadow:
-    0 0 10px rgba(255,215,0,0.7),
-    0 0 30px rgba(255,215,0,0.5);
+    0 5px 25px rgba(0,0,0,0.9),
+    0 0 25px rgba(255,180,100,0.4);
   opacity:0;
   transition:opacity 0.6s ease, transform 0.6s ease;
 }
 
+/* Fonts per Scene */
+.font1{ font-family:'Playfair Display', serif; font-size:40px; }
+.font2{ font-family:'Great Vibes', cursive; font-size:52px; }
+.font3{ font-family:'Montserrat', sans-serif; font-size:36px; }
+.font4{ font-family:'Cinzel', serif; font-size:44px; }
+.font5{ font-family:'Great Vibes', cursive; font-size:60px; }
+
+/* Hearts */
+.heart{
+  position:absolute;
+  bottom:-20px;
+  font-size:14px;
+  color:rgba(255,200,150,0.6);
+  animation:floatUp linear infinite;
+}
+
+@keyframes floatUp{
+  0%{transform:translateY(0);opacity:0;}
+  20%{opacity:1;}
+  100%{transform:translateY(-110vh);opacity:0;}
+}
+
 /* Start Screen */
-#startScreen {
+#startScreen{
   position:fixed;
   width:100%;
   height:100vh;
@@ -81,27 +102,12 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  color:gold;
-  font-size:28px;
+  color:#ffe6c7;
+  font-family:'Great Vibes', cursive;
+  font-size:32px;
   z-index:10;
-  text-shadow:0 0 15px gold;
+  text-shadow:0 0 20px rgba(255,200,150,0.6);
 }
-
-/* Floating Heart */
-.heart {
-  position:absolute;
-  bottom:-20px;
-  font-size:14px;
-  color:rgba(255,215,0,0.5);
-  animation:floatUp linear infinite;
-}
-
-@keyframes floatUp {
-  0% { transform:translateY(0); opacity:0; }
-  20% { opacity:1; }
-  100% { transform:translateY(-110vh); opacity:0; }
-}
-
 </style>
 </head>
 
@@ -115,8 +121,8 @@ body {
 
 <div class="scene">
   <div class="bg" id="bg"></div>
+  <div class="overlay"></div>
   <div class="light" id="light"></div>
-  <div class="hearts" id="hearts"></div>
   <div class="text" id="text"></div>
 </div>
 
@@ -127,8 +133,10 @@ const messages = [
   "Somehow… I found you.",
   "You changed everything.",
   "I choose you.",
-  "Happy Valentine’s Day, My Love ❤️"
+  "Happy Valentine’s Day, Farveen ❤️"
 ];
+
+const fonts = ["font1","font2","font3","font4","font5"];
 
 const images = [
   "scene1.jpg",
@@ -141,25 +149,25 @@ const text = document.getElementById("text");
 const bg = document.getElementById("bg");
 const light = document.getElementById("light");
 
-window.addEventListener("scroll", () => {
+window.addEventListener("scroll",()=>{
 
   let scroll = window.scrollY;
   let maxScroll = document.body.scrollHeight - window.innerHeight;
-  let progress = scroll / maxScroll;
+  let progress = scroll/maxScroll;
 
   let index = Math.floor(progress * messages.length);
-  if(index >= messages.length) index = messages.length - 1;
+  if(index >= messages.length) index = messages.length-1;
 
   text.innerHTML = messages[index];
+  text.className = "text " + fonts[index];
   text.style.opacity = 1;
-  text.style.transform = "translateY(-50%) scale(" + (1 + progress*0.2) + ")";
+  text.style.transform = "translateY(-50%) scale("+(1+progress*0.3)+")";
 
-  let imgIndex = Math.min(index, images.length - 1);
+  let imgIndex = Math.min(index, images.length-1);
   bg.style.backgroundImage = `url(${images[imgIndex]})`;
+  bg.style.transform = "scale("+(1+progress*0.2)+")";
 
-  bg.style.transform = "scale(" + (1 + progress*0.3) + ")";
-  
-  if(progress > 0.6) {
+  if(progress > 0.6){
     light.style.opacity = 1;
   } else {
     light.style.opacity = 0;
@@ -168,22 +176,21 @@ window.addEventListener("scroll", () => {
 });
 
 /* Music Start */
-document.getElementById("startScreen").addEventListener("click", function(){
+document.getElementById("startScreen").addEventListener("click",function(){
   document.getElementById("bgMusic").play();
   this.style.display="none";
 });
 
-/* Hearts Generator */
-function createHeart() {
-  const heart = document.createElement("div");
+/* Hearts */
+function createHeart(){
+  const heart=document.createElement("div");
   heart.classList.add("heart");
-  heart.innerHTML = "❤";
-  heart.style.left = Math.random()*100 + "vw";
-  heart.style.animationDuration = (6 + Math.random()*6) + "s";
-  document.getElementById("hearts").appendChild(heart);
-  setTimeout(()=> heart.remove(),12000);
+  heart.innerHTML="❤";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.animationDuration=(6+Math.random()*6)+"s";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),12000);
 }
-
 setInterval(createHeart,1000);
 
 </script>
